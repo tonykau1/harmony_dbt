@@ -27,9 +27,9 @@ deduped_raw_blocks as (
         'gasUsed', to_numeric(js_hextoint(substr(parse_json(ingest_data):data:result.gasUsed,3))),
         'hash', parse_json(ingest_data):data:result.hash,
         'logs_bloom', parse_json(ingest_data):data:result.logsBloom,
-        'miner', parse_json(ingest_data):data:result.miner,
+        'miner', js_onetohex(parse_json(ingest_data):data:result.miner),
         'mix_hash', parse_json(ingest_data):data:result.mixHash,
-        'nonce', parse_json(ingest_data):data:result.nonce,
+        'nonce', '0x0000000000000000',
         'number', to_numeric(js_hextoint(substr(parse_json(ingest_data):data:result.number,3))),
         'parent_hash', parse_json(ingest_data):data:result.parentHash,
         'receipts_root', parse_json(ingest_data):data:result.receiptsRoot,
@@ -39,11 +39,12 @@ deduped_raw_blocks as (
         'transactions', null,
         'transactions_root', (js_hextoint(substr(parse_json(ingest_data):data:result.transactionsRoot,3))),
         'tx_count', array_size(parse_json(ingest_data):data:result.transactions),
+        'staking_tx_count', array_size(parse_json(ingest_data):data:result.stakingTransactions),
         'uncles', parse_json(ingest_data):data:result.uncles      
         ) as header,
         ingest_timestamp as ingested_at
     from {{ source("public","blocks") }}
-    where {{ incremental_load_filter("ingest_timestamp") }}
+    where {{ incremental_load_filter("ingested_at") }}
     qualify row_number() over (partition by block_id order by ingested_at desc) = 1
 
 )
