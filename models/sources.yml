@@ -95,3 +95,10 @@ sources:
             description: Market Cap of the coin in USD.
           - name: timestamp
             description: When the data was ingested.
+      - name: blocks
+        description: "Ingest Harmony blocks from ant"
+        columns:
+          - name: ingest_timestamp
+            description: What time this infomations was ingested
+          - name: ingest_data
+            description: The json that was ingested.

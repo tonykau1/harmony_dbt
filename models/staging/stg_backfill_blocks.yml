@@ -1,9 +1,4 @@
 version: 2
-sources:
-  - name: public
-    database: ingest
-    tables:
-      - name: blocks
 
 models: 
   - name: stg_backfill_blocks
@@ -47,7 +42,7 @@ models:
           - not_null
 
       - name: header
-        description: A json column containing the block's header information.
+        description: A JSON column containing the block's header information.
         tests:
           - not_null
 

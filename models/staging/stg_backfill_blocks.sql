@@ -43,7 +43,7 @@ deduped_raw_blocks as (
         'uncles', parse_json(ingest_data):data:result.uncles      
         ) as header,
         ingest_timestamp as ingested_at
-    from {{ source("public","blocks") }}
+    from {{ ref('stg_ant_ingest_blocks') }}
     where {{ incremental_load_filter("ingested_at") }}
     qualify row_number() over (partition by block_id order by ingested_at desc) = 1
 

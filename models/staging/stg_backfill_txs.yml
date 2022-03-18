@@ -1,0 +1,37 @@
+version: 2
+
+models: 
+  - name: stg_backfill_txs
+    description: |-
+      Transactions from the Harmony chain shard 0.  Data pulled from Harmony API blocks.  Duplicates have been removed.
+    columns:
+      - name: tx_id
+        description: The unique transaction id.
+        tests:
+          - not_null
+          - unique
+
+      - name: tx_block_index
+        description: The index of the transaction within the block.
+        tests:
+          - not_null
+
+      - name: block_id
+        description: The height of the chain this block corresponds with.
+        tests:
+          - not_null
+
+      - name: block_timestamp
+        description: The time the block was minted.
+        tests:
+          - not_null
+
+      - name: tx
+        description: A JSON column containing the transaction information.
+        tests:
+          - not_null
+
+      - name: ingested_at
+        description: The time this row was ingested by Ant to the ingest db.
+        tests:
+          - not_null
