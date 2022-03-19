@@ -1,0 +1,12 @@
+version: 2
+models: 
+  - name: stg_ant_ingest_receipts
+    description: |-
+      This table is used to bring in source data from the ingest db.
+    columns:
+      - name: ingest_timestamp
+        description: Timestamp that the data was ingested.
+        tests:
+          - not_null
+      - name: ingest_data
+        description: Raw data.

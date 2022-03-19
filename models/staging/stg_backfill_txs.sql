@@ -1,24 +1,24 @@
 {{ 
-    config(
-        materialized='incremental',
-        unique_key='tx_id',
-        tags=['core', 'transactions'],
-        cluster_by=['block_timestamp']
-        )
+  config(
+    materialized='incremental',
+    unique_key='tx_id',
+    tags=['core', 'transactions'],
+    cluster_by=['block_timestamp']
+  )
 }}
 
 with
 
 stg_parsed as (
-    select 
-        ingest_timestamp as ingested_at,
-        try_parse_json(ingest_data) as ingest_data
-    from {{ ref('stg_ant_ingest_blocks') }}
-    where {{ incremental_load_filter("ingested_at") }}
+  select 
+    ingest_timestamp as ingested_at,
+    try_parse_json(ingest_data) as ingest_data
+  from {{ ref('stg_ant_ingest_blocks') }}
+  where {{ incremental_load_filter("ingested_at") }}
 ),
 
 deduped_raw_txs as (
-    select 
+  select 
     f.value:hash::string as tx_id,
     to_numeric(js_hextoint(substr(f.value:transactionIndex::string,3))) as tx_block_index,
     to_numeric(js_hextoint(substr(parse_json(ingest_data):data:result.number,3))) as block_id,
@@ -42,10 +42,8 @@ deduped_raw_txs as (
       'value', to_numeric(js_hextoint(substr(f.value:value::string,3)))
     ) as tx,
     ingested_at
- from stg_parsed as b,
-   lateral flatten(input => b.ingest_data, path => 'data.result.transactions') as f
-  --where 
-    --qualify row_number() over (partition by block_id order by ingested_at desc) = 1
+  from stg_parsed as b,
+    lateral flatten(input => b.ingest_data, path => 'data.result.transactions') as f
 )
 
 select * from deduped_raw_txs

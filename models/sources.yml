@@ -102,3 +102,10 @@ sources:
             description: What time this infomations was ingested
           - name: ingest_data
             description: The json that was ingested.
+      - name: receipts
+        description: "Ingest Harmony receipts from ant"
+        columns:
+          - name: ingest_timestamp
+            description: What time this infomations was ingested
+          - name: ingest_data
+            description: The json that was ingested.

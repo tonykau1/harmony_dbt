@@ -9,12 +9,11 @@
 }}
 
 with
-
 source_table as (
     select
         ingest_timestamp,
         ingest_data
-    from {{ source("ingest","blocks") }}
+    from {{ source("ingest","receipts") }}
     where {{ incremental_load_filter("ingest_timestamp") }}
         qualify row_number() over (partition by ingest_data order by ingest_timestamp desc) = 1
 )

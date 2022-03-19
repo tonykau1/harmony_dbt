@@ -1,0 +1,57 @@
+version: 2
+
+models: 
+  - name: stg_backfill_logs
+    description: |-
+      Transaction logs from the Harmony chain shard 0.  Data pulled from Harmony API blocks.  Duplicates have been removed.
+    columns:
+      - name: log_id
+        description: The unique log id.
+        tests:
+          - not_null
+          - unique
+
+      - name: block_id
+        description: The height of the chain this block corresponds with.
+        tests:
+          - not_null
+
+      - name: tx_hash
+        description: The Eth hash a.k.a. the transaction id.
+        tests:
+          - not_null
+
+      - name: event_index
+        description: The index number of this log in the transaction receipt.
+        tests:
+          - not_null
+
+      - name: native_contract_address
+        description: The ONE address of the smart contract running.
+        tests:
+          - not_null
+
+      - name: evm_contract_address
+        description: The Eth address of the smart contract running.
+        tests:
+          - not_null
+
+      - name: topics
+        description: The raw topics for this event.
+        tests:
+          - not_null
+
+      - name: data
+        description: The raw data for this event.
+        tests:
+          - not_null
+
+      - name: event_removed
+        description: In case logs are removed (chain reorg) previously returned logs are returned again but with the removed property set to true.
+        tests:
+          - not_null
+
+      - name: ingested_at
+        description: The time this row was ingested by Ant to the ingest db.
+        tests:
+          - not_null
