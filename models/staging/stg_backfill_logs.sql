@@ -20,7 +20,7 @@ stg_parsed as (
 parsed2 as (
   select 
     to_numeric(ingest_data:data:result.blockNumber) as block_id,
-    ingest_data:subtype as tx_hash,
+    ingest_data:subtype as tx_id, -- Ethereum tx hash
     f.value:logIndex::string as event_index,
     ingest_data:data:result.to as native_contract_address,
     js_onetohex(ingest_data:data:result.to) as evm_contract_address,
@@ -34,7 +34,7 @@ parsed2 as (
 
 final as (
   select
-    concat_ws('-', tx_hash, event_index) as log_id,
+    concat_ws('-', tx_id, event_index) as log_id,
     *
   from parsed2  
 )

@@ -6,18 +6,18 @@ models:
       Transactions from the Harmony chain shard 0.  Data pulled from Harmony API blocks.  Duplicates have been removed.
     columns:
       - name: tx_id
-        description: The unique transaction id.
+        description: The unique Ethereum transaction id.
         tests:
           - not_null
           - unique
 
-      - name: tx_block_index
+      - name: tx_index
         description: The index of the transaction within the block.
         tests:
           - not_null
 
       - name: block_id
-        description: The height of the chain this block corresponds with.
+        description: The block number or height of the chain this block corresponds with.
         tests:
           - not_null
 
@@ -26,12 +26,78 @@ models:
         tests:
           - not_null
 
-      - name: tx
-        description: A JSON column containing the transaction information.
+      - name: native_from_address
+        description: The Harmony address the transaction was sent from.
         tests:
           - not_null
 
+      - name: native_to_address
+        description: The Harmony address the transaction was sent to.
+        tests:
+          - not_null
+
+      - name: from_address
+        description: The Ethereum address the transaction was sent from.
+        tests:
+          - not_null
+
+      - name: to_address
+        description: The Ethereum address the transaction was sent to.
+        tests:
+          - not_null
+
+      - name: gas_used
+        description: The amount of gas used on the transaction.
+        tests:
+          - not_null
+
+      - name: gas_price
+        description: The cost per unit of gas specified for the transaction, in ONE.  The higher the gas price, the higher the chance of getting included in a block.
+        tests:
+          - not_null
+      
+      - name: native_tx_hash
+        description: The unique Harmony transaction hash.
+        tests:
+          - not_null
+          - unique
+      
+      - name: input
+        description: Additional information for the transaction, like events and values.
+        tests:
+          - not_null
+      
+      - name: nonce
+        description: Sequential running number for an address, beginning with 0 for the first transaction. Nonce + 1 is the number of transactions this address has sent as of this transaction.
+        tests:
+          - not_null
+      
+      - name: r
+        description: Value for the transactions signature.
+        tests:
+          - not_null
+      
+      - name: s
+        description: Value for the transactions signature.
+        tests:
+          - not_null
+      
+      - name: v
+        description: Value for the transactions signature.
+        tests:
+          - not_null
+      
+      - name: value
+        description: Value sent in the transaction, in ONE.
+        tests:
+          - not_null
+          
       - name: ingested_at
         description: The time this row was ingested by Ant to the ingest db.
+        tests:
+          - not_null
+
+      - name: status
+        description: True if the transaction was successful.
         tests:
           - not_null

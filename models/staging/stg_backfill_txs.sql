@@ -17,33 +17,37 @@ stg_parsed as (
   where {{ incremental_load_filter("ingested_at") }}
 ),
 
-deduped_raw_txs as (
+raw_txs as (
   select 
-    f.value:hash::string as tx_id,
-    to_numeric(js_hextoint(substr(f.value:transactionIndex::string,3))) as tx_block_index,
-    to_numeric(js_hextoint(substr(parse_json(ingest_data):data:result.number,3))) as block_id,
-    to_timestamp(to_numeric(js_hextoint(substr(parse_json(ingest_data):data:result.timestamp,3)))) as block_timestamp,
-    object_construct_keep_null(
-      'bech32_from', f.value:from,
-      'bech32_to', f.value:to,
-      'block_hash', f.value:blockHash,
-      'block_number', to_numeric(js_hextoint(substr(f.value:blockNumber::string,3))),
-      'from', js_onetohex(f.value:from::string),
-      'gas', to_numeric(js_hextoint(substr(f.value:gas::string,3))),
-      'gas_price', to_numeric(js_hextoint(substr(f.value:gasPrice::string,3))),
-      'hash', f.value:hash,
-      'input', f.value:input,
-      'nonce', f.value:nonce,
-      'r', f.value:r,
-      's', f.value:s,
-      'to', js_onetohex(f.value:to::string),
-      'transactionIndex', to_numeric(js_hextoint(substr(f.value:transactionIndex::string,3))),
-      'v', f.value:v,
-      'value', to_numeric(js_hextoint(substr(f.value:value::string,3)))
-    ) as tx,
+    f.value:ethHash::string as tx_id, -- Eth tx hash
+    to_numeric(js_hextoint(substr(f.value:transactionIndex::string,3))) as tx_index,
+    to_numeric(js_hextoint(substr(ingest_data:data:result.number,3))) as block_id,
+    to_timestamp(to_numeric(js_hextoint(substr(ingest_data:data:result.timestamp,3)))) as block_timestamp,
+    f.value:from::string as native_from_address,
+    f.value:to::string as native_to_address,
+    js_onetohex(f.value:from::string) as from_address,
+    js_onetohex(f.value:to::string) as to_address,
+    to_numeric(js_hextoint(substr(f.value:gas::string,3))) as gas_used,
+    to_numeric(js_hextoint(substr(f.value:gasPrice::string,3))) as gas_price,
+    f.value:hash::string as native_tx_hash,
+    f.value:input as input,
+    f.value:nonce as nonce,
+    f.value:r as r,
+    f.value:s as s,
+    f.value:v as v,
+    to_numeric(js_hextoint(substr(f.value:value::string,3))) as value,
     ingested_at
   from stg_parsed as b,
     lateral flatten(input => b.ingest_data, path => 'data.result.transactions') as f
+),
+
+final as (  -- add lookup for status from receipts ingest
+  select 
+    t.*,
+    r.status
+  from raw_txs as t
+  left join {{ref ('stg_backfill_receipts')}} as r
+    on t.tx_id = r.tx_id
 )
 
-select * from deduped_raw_txs
+select * from final

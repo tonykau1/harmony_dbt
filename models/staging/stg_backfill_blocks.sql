@@ -25,6 +25,7 @@ deduped_raw_blocks as (
             'gasLimit', to_numeric(js_hextoint(substr(parse_json(ingest_data):data:result.gasLimit,3))),
             'gasUsed', to_numeric(js_hextoint(substr(parse_json(ingest_data):data:result.gasUsed,3))),
             'hash', parse_json(ingest_data):data:result.hash,
+            'ethHash', parse_json(ingest_data):data:result.ethHash,
             'logs_bloom', parse_json(ingest_data):data:result.logsBloom,
             'miner', js_onetohex(parse_json(ingest_data):data:result.miner),
             'mix_hash', parse_json(ingest_data):data:result.mixHash,
