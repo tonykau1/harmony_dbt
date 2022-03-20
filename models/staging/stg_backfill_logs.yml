@@ -16,7 +16,7 @@ models:
         tests:
           - not_null
 
-      - name: tx_hash
+      - name: tx_id
         description: The Eth hash a.k.a. the transaction id.
         tests:
           - not_null

@@ -13,6 +13,22 @@ with base_blocks as (
     where {{ incremental_load_filter("block_timestamp") }}
 ),
 
+backfill_blocks as (
+    select * from {{ ref('stg_backfill_blocks')}}
+    where {{ incremental_load_filter("block_timestamp") }}
+),
+
+unioned_blocks as ( 
+    select * from base_blocks
+
+    union all
+    
+    select 
+        null as record_id,
+        * 
+    from backfill_blocks
+)
+
 final as (
 
     select
@@ -30,7 +46,8 @@ final as (
         header:state_root::string as state_root,
         header:receipts_root::string as receipts_root
 
-    from base_blocks
+    from unioned_blocks 
+    qualify row_number() over (partition by block_id order by ingested_at desc) = 1
 )
 
 select * from final

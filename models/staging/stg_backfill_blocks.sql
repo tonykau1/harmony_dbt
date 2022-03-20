@@ -11,7 +11,6 @@ with
 
 deduped_raw_blocks as (
     select 
-        uuid_string() as record_id,
         to_numeric(js_hextoint(substr(parse_json(ingest_data):data:result.number,3))) as offset_id,
         to_numeric(js_hextoint(substr(parse_json(ingest_data):data:result.number,3))) as block_id,
         to_timestamp(to_numeric(js_hextoint(substr(parse_json(ingest_data):data:result.timestamp,3)))) as block_timestamp,
