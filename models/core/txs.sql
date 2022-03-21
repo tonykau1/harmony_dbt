@@ -35,21 +35,21 @@ base2 as (
 
 backfill as ( 
     select 
-        block_timestamp,
-        nonce,
-        tx_index as index,
-        native_from_address,
-        native_to_address,
-        from_address,
-        to_address,
-        value,
-        block_id as block_number,
+        t.block_timestamp,
+        t.nonce,
+        t.tx_index as index,
+        t.native_from_address,
+        t.native_to_address,
+        t.from_address,
+        t.to_address,
+        t.value,
+        t.block_id as block_number,
         b.header:hash::string as block_hash,
-        gas_price,
-        gas_used as gas,
-        tx_id as tx_hash,
-        input as data,
-        status
+        t.gas_price,
+        t.gas_used as gas,
+        t.tx_id as tx_hash,
+        t.input as data,
+        t.status
     from {{ ref('stg_backfill_txs') }} as t
     left join {{ ref('stg_backfill_blocks')}} as b
         on t.block_id = b.block_id
@@ -65,7 +65,7 @@ unioned_txs as (
 
 final as ( 
     select * from unioned_txs 
-    qualify row_number() over (partition by tx_hash) = 1
+    qualify row_number() over (partition by tx_hash order by block_number) = 1
 )
 
 select * from final

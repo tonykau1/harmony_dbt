@@ -27,7 +27,7 @@ unioned_blocks as (
         null as record_id,
         * 
     from backfill_blocks
-)
+),
 
 final as (
 

@@ -89,6 +89,7 @@ def get_pool_csv_line(addr):
     fin = addr + "," + nam + "," + t0 + "," + t1
     return fin
 
+
 #r = get_csv_line('0xd1069122ce76aca9ef66188b3543ef1ff17e8f8c')
 #r = get_token_csv_line('0xe01502db14929b7733e7112e173c3bcf566f996e')
 #print(r)
@@ -136,9 +137,11 @@ def backfill_tokens():
 
     csv_file.close()
 
-backfill_tokens()
+#backfill_tokens()
 
 #r = get_pool_csv_line('0x29fc4d7d55a3cd08f0971e3b009642f56efb8c60')
 #print(r)
 
 
+r = get_token_csv_line('0xdc54046c0451f9269fee1840aec808d36015697d')
+print(r)
